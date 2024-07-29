@@ -1,84 +1,107 @@
 // Tic Tac Toe Game - Task 3
 
 #include <iostream>
-#include <vector>
-#include <string>
-
+#include <sstream> 
 using namespace std;
 
-vector<vector<char>> board = {{'1', '2', '3'}, {'4', '5', '6'}, {'7', '8', '9'}};
+string tik[9];
+int choice;
+string winner;
+bool flag;
 
-void displayBoard() {
-    cout << " " << board[0][0] << " | " << board[0][1] << " | " << board[0][2] << "\n";
-    cout << "-----------\n";
-    cout << " " << board[1][0] << " | " << board[1][1] << " | " << board[1][2] << "\n";
-    cout << "-----------\n";
-    cout << " " << board[2][0] << " | " << board[2][1] << " | " << board[2][2] << "\n";
+void initialize() {
+    for (int i = 0; i < 9; ++i) {
+        stringstream ss;
+        ss << i;
+        tik[i] = ss.str();
+    }
+    winner = "";
+    flag = true;
 }
 
-bool checkForWin(char player) {
-    for (int i = 0; i < 3; i++) {
-        if (board[i][0] == player && board[i][1] == player && board[i][2] == player) {
-            return true;
-        }
+int play(string player) {
+    cout << "Enter " << player << " choice: ";
+    cin >> choice;
+    while (choice < 0 || choice > 8 || tik[choice] == "X" || tik[choice] == "O") {
+        cout << "Invalid move. Enter a different " << player << " choice: ";
+        cin >> choice;
     }
-    for (int i = 0; i < 3; i++) {
-        if (board[0][i] == player && board[1][i] == player && board[2][i] == player) {
-            return true;
-        }
-    }
-    if ((board[0][0] == player && board[1][1] == player && board[2][2] == player) ||
-        (board[0][2] == player && board[1][1] == player && board[2][0] == player)) {
-        return true;
-    }
-    return false;
+    tik[choice] = player;
+    return 0;
 }
 
-bool checkForDraw() {
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            if (board[i][j] != 'X' && board[i][j] != 'O') {
-                return false;
+bool check() {
+    if (tik[0] == tik[1] && tik[1] == tik[2]) {
+        winner = tik[0];
+        flag = false;
+    } else if (tik[3] == tik[4] && tik[4] == tik[5]) {
+        winner = tik[3];
+        flag = false;
+    } else if (tik[6] == tik[7] && tik[7] == tik[8]) {
+        winner = tik[6];
+        flag = false;
+    } else if (tik[0] == tik[3] && tik[3] == tik[6]) {
+        winner = tik[0];
+        flag = false;
+    } else if (tik[1] == tik[4] && tik[4] == tik[7]) {
+        winner = tik[1];
+        flag = false;
+    } else if (tik[2] == tik[5] && tik[5] == tik[8]) {
+        winner = tik[2];
+        flag = false;
+    } else if (tik[0] == tik[4] && tik[4] == tik[8]) {
+        winner = tik[0];
+        flag = false;
+    } else if (tik[2] == tik[4] && tik[4] == tik[6]) {
+        winner = tik[2];
+        flag = false;
+    } else {
+        bool draw = true;
+        for (int i = 0; i < 9; i++) {
+            if (tik[i] != "X" && tik[i] != "O") {
+                draw = false;
+                break;
             }
         }
+        if (draw) {
+            winner = "Draw";
+            flag = false;
+        }
     }
-    return true;
+    return flag;
+}
+
+int print() {
+    for (int i = 0; i < 9; i++) {
+        cout << "|" << tik[i] << "|";
+        if ((i + 1) % 3 == 0) {
+            cout << "\n";
+            cout << "---------\n";
+        }
+    }
+    return 0;
 }
 
 int main() {
-    char currentPlayer = 'X';
-    int move;
-    bool gameOver = false;
-
-    while (!gameOver) {
-        displayBoard();
-        cout << "Player " << currentPlayer << ", enter your move (1-9): ";
-        cin >> move;
-
-        int row = (move - 1) / 3;
-        int col = (move - 1) % 3;
-        board[row][col] = currentPlayer;
-
-        if (checkForWin(currentPlayer)) {
-            displayBoard();
-            cout << "Player " << currentPlayer << " wins!\n";
-            gameOver = true;
-        } else if (checkForDraw()) {
-            displayBoard();
-            cout << "It's a draw!\n";
-            gameOver = true;
-        } else {
-            currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
-        }
-    }
-
     char playAgain;
-    cout << "Do you want to play again? (y/n): ";
-    cin >> playAgain;
-    if (playAgain == 'y') {
-        board = {{'1', '2', '3'}, {'4', '5', '6'}, {'7', '8', '9'}};
-        main();
-    }
-
+    do {
+        initialize();
+        while (flag) {
+            print();
+            play("X");
+            if (!check()) break;
+            print();
+            play("O");
+            check();
+        }
+        print();
+        if (winner == "Draw") {
+            cout << "It's a draw!" << endl;
+        } else {
+            cout << winner << " won!" << endl;
+        }
+        cout << "Do you want to play again? (y/n): ";
+        cin >> playAgain;
+    } while (playAgain == 'y' || playAgain == 'Y');
     return 0;
 }
