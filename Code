@@ -1,4 +1,4 @@
-// Tic Tac Toe Game - Task 3
+// Tic Tac Toe Game 
 
 #include <iostream>
 #include <sstream> 
